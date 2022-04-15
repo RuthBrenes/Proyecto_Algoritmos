@@ -1,0 +1,1 @@
+ABC; Audi; SQ5; 2015; Blanco; 2995; Gasolina; 7; 250000; Aire acondicionado, Bluetooth, Control de radio en el volante 2;
