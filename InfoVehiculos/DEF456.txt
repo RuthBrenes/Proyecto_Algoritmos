@@ -1,1 +1,1 @@
-DEF456; BMW; X3; 2007; Negro; 1995; Diesel; 5; 130000; Iluminacion LED adaptativa, Asistente virtual; 1;
+DEF456; BMW; X3; 2007; Negro; 1995; Diesel; 5; 130000; Iluminacion LED adaptativa, Asistente virtual; Disponible;
