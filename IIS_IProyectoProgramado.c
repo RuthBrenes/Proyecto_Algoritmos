@@ -79,6 +79,7 @@ ListaCliente *lista2(void)
 }
 
 informacionVehiculos listaExtra[0];
+void menu(Lista *L, ListaCliente *C, informacionVehiculos infoV, informacionCliente infoC);
 
 void lecturaDatosVehiculos(informacionVehiculos *infoV)
 {
@@ -329,15 +330,8 @@ void extraerListaVehiculos(informacionVehiculos *infoV, string lista[])
 	
 	while(indice < infoV->tamanoListaV)
 	{	
-		if(indice == (infoV->tamanoListaV)-1)
-		{
-			fprintf(archivoAux,"%s;", lista[indice]);
-		}
-		else
-		{
-			fprintf(archivoAux,"%s;", lista[indice]);
-		}
-		indice ++;
+		fprintf(archivoAux,"%s;", lista[indice]);
+		indice++;
 	}
 	printf("\n");
 	printf("La modificacion se realizo exitosamente");
@@ -374,7 +368,6 @@ void modificarInfoV(informacionVehiculos *infoV)
    			while( token != NULL ) 
 			{
       			strcpy(listaVehiculos[indice], token);
-      			printf("%s\n", token);
       			infoV->tamanoListaV++;
       			indice++;
     
@@ -385,6 +378,71 @@ void modificarInfoV(informacionVehiculos *infoV)
 	fclose(archivo);
 	remove(infoV->tipoArchivo);
 	extraerListaVehiculos(infoV, listaVehiculos);
+}
+
+void eliminarPlacaTotal(informacionVehiculos *infoV, string lista[])
+{	
+	FILE *archivoAux;
+	
+	int indice = 0;
+
+	while(indice < infoV->tamanoListaV)
+	{
+		if(strcmp(lista[indice], infoV->numeroPlaca) == 0)
+		strcpy(lista[indice], "");
+		indice++;
+	}
+
+	string rutaAux;
+	strcpy(rutaAux, ".\\InfoVehiculos\\Placas");
+	strcpy(infoV->tipoArchivo, rutaAux);
+	strcat(infoV->tipoArchivo, ".txt");
+	archivoAux = fopen(infoV->tipoArchivo, "a+");
+	
+	indice = 0;
+	while(indice < infoV->tamanoListaV)
+	{	
+		fprintf(archivoAux,"%s;", lista[indice]);
+		indice++;
+	}
+}
+
+void datosPlacasTotales(informacionVehiculos *infoV)
+{
+	FILE *archivo = NULL; 
+	
+	string listaVehiculos[100];
+	infoV->tamanoListaV = 0;
+	int indice = 0;
+	char linea[300];
+	char *delimitador = ";";
+	char *token = NULL;
+	
+	string ruta;
+	strcpy(ruta, ".\\InfoVehiculos\\Placas");
+	strcpy(infoV->tipoArchivo, ruta);
+	strcat(infoV->tipoArchivo, ".txt");
+	
+	archivo = fopen(infoV->tipoArchivo, "a+");
+	
+	if(archivo)
+	{
+		while(fgets(linea, 300, archivo))
+		{
+   			token = strtok(linea, delimitador);
+   			while( token != NULL ) 
+			{
+      			strcpy(listaVehiculos[indice], token);
+      			infoV->tamanoListaV++;
+      			indice++;
+    
+      			token = strtok(NULL, delimitador);
+   			}
+		}
+	}
+	fclose(archivo);
+	remove(infoV->tipoArchivo);
+	eliminarPlacaTotal(infoV, listaVehiculos);
 }
 
 void eliminarVehiculo(informacionVehiculos *infoV)
@@ -405,6 +463,7 @@ void eliminarVehiculo(informacionVehiculos *infoV)
 	fclose(archivo);
 	
 	remove(infoV->tipoArchivo);
+	datosPlacasTotales(infoV);
 	printf("\nEl vehiculo ha sido eliminado del sistema\n");
 }
 
@@ -414,7 +473,7 @@ void infoUnVehiculo(informacionVehiculos *infoV)
 	
 	string listaVehiculos[100];
 	infoV->tamanoListaV = 0;
-	int indice = 0;
+	int indice = 1;
 	char linea[300];
 	char *delimitador = ";";
 	char *token = NULL;
@@ -440,13 +499,62 @@ void infoUnVehiculo(informacionVehiculos *infoV)
    			token = strtok(linea, delimitador);
    			while( token != NULL ) 
 			{
-				printf("%s\n", token);
+				if(indice == 1)
+				{
+					printf("Numero de placa:        %s\n", token);
+				}
+				else if(indice == 2)
+				{
+					printf(" Marca:                 %s\n", token);
+				}
+				else if(indice == 3)
+				{
+					printf(" Modelo:                %s\n", token);
+				}
+				else if(indice == 4)
+				{
+					printf(" Anno:                  %s\n", token);
+				}
+				else if(indice == 5)
+				{
+					printf(" Color:                 %s\n", token);
+				}
+				else if(indice == 6)
+				{
+					printf(" Cilindrada:            %s\n", token);
+				}
+				else if(indice == 7)
+				{
+					printf(" Tipo de combustible:   %s\n", token);
+				}
+				else if(indice == 8)
+				{
+					printf(" Cantidad de pasajeros: %s\n", token);
+				}
+				else if(indice == 9)
+				{
+					printf(" Precio de alquiler:    %s\n", token);
+				}
+				else if(indice == 10)
+				{
+					printf(" Informacion extra:     %s\n", token);
+				}
+				else if(indice == 11)
+				{
+					printf(" Estado:                %s\n", token);
+				}
+				else
+				{
+					printf("%s\n", token);
+				}
       			indice++;
       			token = strtok(NULL, delimitador);
    			}
 		}
 	}
 	fclose(archivo);
+	printf("\n");
+	printf("\n");
 }
 
 void mostrarVehiculosTotales(informacionVehiculos *infoV, string lista[])
@@ -719,7 +827,6 @@ void modificarInfoCliente(informacionCliente *infoC)
    			while( token != NULL ) 
 			{
       			strcpy(listaCliente[indice], token);
-      			//printf("%s", token);
       			infoC->tamano++;
       			indice++;
     
@@ -735,7 +842,7 @@ void modificarInfoCliente(informacionCliente *infoC)
 void infoUnCliente(informacionCliente *infoC)
 {	
 	FILE *archivo;
-	int indice = 0;
+	int indice = 1;
 	char linea[300];
 	char *delimitador = ";";
 	char *token = NULL;
@@ -755,7 +862,7 @@ void infoUnCliente(informacionCliente *infoC)
 	
 	archivo = fopen(infoC->tipoArchivo, "a+");
 	
-	printf("La informacion del cliente seleccionado es: \n\n ");
+	printf("La informacion del cliente seleccionado es: \n\n");
 	if(archivo)
 	{
 		while(fgets(linea, 300, archivo))
@@ -763,7 +870,31 @@ void infoUnCliente(informacionCliente *infoC)
    			token = strtok(linea, delimitador);
    			while( token != NULL ) 
 			{
-				printf("%s\n", token);
+				if(indice == 1)
+				{
+					printf(" Numero de cedula:     %s\n", token);
+				}
+				else if(indice == 2)
+				{
+					printf(" Nombre completo:     %s\n", token);
+				}
+				else if(indice == 3)
+				{
+					printf(" Fecha de nacimiento: %s\n", token);
+				}
+				else if(indice == 4)
+				{
+					printf(" Correo electronico:  %s\n", token);
+				}
+				else if(indice == 5)
+				{
+					printf(" Categoria:           %s\n", token);
+				}
+				else
+				{
+					printf("%s\n", token);
+				}
+				indice ++;
       			token = strtok(NULL, delimitador);
    			}
 		}
@@ -804,6 +935,257 @@ void consultaTodosC(informacionCliente *infoC)
 	infoUnCliente(infoC);
 }
 
+void eliminarInfoCliente(informacionCliente *infoC, string lista[])
+{	
+	FILE *archivoAux;
+	
+	int indice = 0;
+	string nombre;
+	string fechaN;
+	string correo;
+	string categoria;
+	string espacio = " ";
+	int respuesta;
+	
+	if(strcmp(lista[infoC->tamano-1], " Alquilando") == 0)
+	{
+		printf("\nNo se puede hacer la eliminacion, actualmente el cliente esta alquilando un vehiculo"); 
+	}
+
+	else 
+	{
+		remove(infoC->tipoArchivo);
+		printf("\n");
+		printf("\nLa informacion del cliente ha sido eliminada\n");
+	}
+}
+
+void extraerInfoC(informacionCliente *infoC)
+{
+	FILE *archivo = NULL; 
+	
+	string listaCliente[100];
+	infoC->tamano = 0;
+	int indice = 0;
+	char linea[300];
+	char *delimitador = ";";
+	char *token = NULL;
+	
+	printf("Ingrese el numero de cedula del cliente que desea eliminar: ");
+	gets(infoC->numeroCedula);
+	
+	string ruta;
+	strcpy(ruta, ".\\InfoClientes\\");
+	strcat(ruta, infoC->numeroCedula);
+	strcpy(infoC->tipoArchivo, ruta);
+	strcat(infoC->tipoArchivo, ".txt");
+	
+	archivo = fopen(infoC->tipoArchivo, "a+");
+	
+	if(archivo)
+	{
+		while(fgets(linea, 300, archivo))
+		{
+   			token = strtok(linea, delimitador);
+   			while( token != NULL ) 
+			{
+      			strcpy(listaCliente[indice], token);
+      			infoC->tamano++;
+      			indice++;
+    
+      			token = strtok(NULL, delimitador);
+   			}
+		}
+	}
+	fclose(archivo);
+	eliminarInfoCliente(infoC, listaCliente);
+}
+
+void administrarInfoV(){
+	int activadorBucle2 = 1;
+	int opcionElegidaSubmenu;
+	printf(" \n");
+	while(activadorBucle2 == 1){
+		printf("____________________________________________________________\n");
+		printf("\n");
+		printf("       Administrar informacion de los vehiculos             \n");
+		printf("____________________________________________________________\n");
+		printf(" \n");
+		printf("Seleccione una de las funciones disponibles:\n");
+		printf(" \n");
+		printf("1-Modificar informacion\n");
+		printf("2-Eliminar vehiculo registrado\n");
+		printf("3-Consultar la informacion de un vehiculo\n");
+		printf("4-Consultar lista de vehiculos registrados\n");
+		printf("5-Regresar al menu principal\n");
+		printf("\n");
+		printf("\n");
+		printf("La opcion selecionada es: ");
+		scanf( "%d", &opcionElegidaSubmenu);
+		getchar();
+		printf("\n");
+		printf("\n");
+		
+		if(opcionElegidaSubmenu>6){
+		
+		
+			printf("La opcion elegida no es valida, elija otra opcion\n");
+				printf(" \n");
+				printf(" \n");		
+		}
+		
+   		Lista *L;
+		L = listaNueva();
+		informacionVehiculos vehiculo;
+	
+		ListaCliente *C;
+		C = lista2();
+		informacionCliente cliente;
+
+		switch(opcionElegidaSubmenu)
+		{
+			
+			case 1: modificarInfoV(&vehiculo);
+			break;
+			case 2: eliminarVehiculo(&vehiculo);
+			break;
+			case 3: infoUnVehiculo(&vehiculo);
+			break;
+			case 4: extraerDatosPlacas(&vehiculo);
+			break;
+			case 5: menu(L, C, vehiculo, cliente);
+			break;
+		}
+	}		
+}
+
+void administrarInfoC(){
+	int activadorBucle2 = 1;
+	int opcionElegidaSubmenu;
+	printf(" \n");
+	while(activadorBucle2 == 1){
+		printf("____________________________________________________________\n");
+		printf("\n");
+		printf("       Administrar informacion de los clientes              \n");
+		printf("____________________________________________________________\n");
+		printf(" \n");
+		printf("Seleccione una de las funciones disponibles:\n");
+		printf(" \n");
+		printf("1-Modificar informacion\n");
+		printf("2-Eliminar informacion\n");
+		printf("3-Consultar informacion\n");
+		printf("4-Regresar al menu principal\n");
+		printf("\n");
+		printf("\n");
+		printf("La opcion selecionada es: ");
+		scanf( "%d", &opcionElegidaSubmenu);
+		getchar();
+		printf("\n");
+		printf("\n");
+		
+		if(opcionElegidaSubmenu>6)
+		{
+		
+		
+			printf("La opcion elegida no es valida, elija otra opcion\n");
+				printf(" \n");
+				printf(" \n");		
+		}
+		
+   		Lista *L;
+		L = listaNueva();
+		informacionVehiculos vehiculo;
+	
+		ListaCliente *C;
+		C = lista2();
+		informacionCliente cliente;
+
+		switch(opcionElegidaSubmenu)
+		{
+			
+			case 1: modificarInfoCliente(&cliente);
+			break;
+			case 2: extraerInfoC(&cliente);
+			break;
+			case 3: consultaTodosC(&cliente);
+			break;
+			case 4: menu(L, C, vehiculo, cliente);
+			break;
+		}
+	}		
+}
+
+void menu(Lista *L, ListaCliente *C, informacionVehiculos infoV, informacionCliente infoC)
+{
+	int activadorBucle=1;
+	int opcionElegidaPrincipal;
+
+	
+	while(activadorBucle==1)
+	{
+		printf("\t************************************\n\n");
+		printf("\t*         RENT A CAR               *\n");     
+		printf("\t*                                  *\n");         
+		printf("\t*         MENU PRINCIPAL           *\n\n");
+		printf("\t************************************\n");
+		printf(" \n");
+		printf("\tSeleccione una de las funciones disponibles:\n");
+		printf(" \n");
+		printf("\t1-Registrar vehiculo\n");
+		printf("\t2-Administrar informacion de los vehiculos \n");
+		printf("\t3-Registrar cliente\n");
+		printf("\t4-Administrar informacion de los clientes\n");
+		printf("\t5-Solicitar alquiler de un vehiculo\n");
+		printf("\t6-Consultar solicitudes de alquileres registradas\n");
+		printf("\t7-Devolver vehiculo\n");
+		printf("\t8-Analisis de datos\n");
+		printf("\t9-Salir\n");
+		printf(" \n");
+		printf(" \n");
+		printf("\tLa opcion selecionada es: ");
+		scanf( "%d", &opcionElegidaPrincipal);
+		getchar();
+		printf(" \n");
+		printf(" \n");
+
+		if((opcionElegidaPrincipal>9)|| (opcionElegidaPrincipal<1))
+		{
+			printf("----La opcion elegida no es valida, elija otra opcion----\n");
+			printf(" \n");
+			printf(" \n");
+			printf(" \n");
+		}
+		switch(opcionElegidaPrincipal)
+		{	
+			case 1: insertarVehiculo(L, infoV);
+			break;
+			
+			case 2: administrarInfoV();
+			break;
+			
+			case 3: insertarDatosCliente(C, infoC);
+			break;
+			
+			case 4: administrarInfoC();
+			break;
+
+			case 5: printf("Solicitar alquiler de un vehiculo");
+			break;
+			
+			case 6: printf("Consultar solicitudes de alquileres\n");
+			break;
+
+			case 7: printf("Devolver vehiculo\n");
+			break;
+
+			case 8: printf("Analisis de datos\n");
+			break;
+
+			case 9: activadorBucle=0;
+		}
+	}
+}
+
 int main()
 {
     Lista *L;
@@ -822,6 +1204,8 @@ int main()
 	//insertarDatosCliente(C, cliente);
 	//modificarInfoCliente(&cliente);
 	//consultaTodosC(&cliente);
+	//extraerInfoC(&cliente);
+	menu(L, C, vehiculo, cliente);
     
     return 0;
 }
