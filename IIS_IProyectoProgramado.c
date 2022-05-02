@@ -15,10 +15,6 @@ char *FUERA_DE_CIRCULACION = "Fuera de circulacion";
 //-------------------------------//										
 
 typedef struct{
-    string estado;
-}estadosDisponibles;
-
-typedef struct{
     string infoExtra;
 }informacionExtra;
 
@@ -39,7 +35,7 @@ typedef struct{
 	int cantInfoExtra;
 	int tamanoPlacas;
 	int numeroVehiculos;
-    estadosDisponibles tipoEstado;
+    string estado;
 }informacionVehiculos;
 
 typedef struct{
@@ -148,19 +144,19 @@ void lecturaDatosVehiculos(informacionVehiculos *infoV)
 
 	if(numEstado == 1)
 	{
-		strcpy(infoV->tipoEstado.estado, DISPONIBLE);
+		strcpy(infoV->estado, DISPONIBLE);
 	}
 	else if(numEstado == 2)
 	{
-		strcpy(infoV->tipoEstado.estado, ALQUILADO);
+		strcpy(infoV->estado, ALQUILADO);
 	}
 	else if(numEstado == 3)
 	{
-		strcpy(infoV->tipoEstado.estado, EN_REPARACION);
+		strcpy(infoV->estado, EN_REPARACION);
 	}
 	else
 	{
-		strcpy(infoV->tipoEstado.estado, FUERA_DE_CIRCULACION);
+		strcpy(infoV->estado, FUERA_DE_CIRCULACION);
 	}
 }
 
@@ -183,7 +179,7 @@ void insercionArchivosVehiculos(informacionVehiculos *infoV)
 		fprintf(archivo, " %s,", listaExtra[indice].extras.infoExtra);
 		indice++;
 	}
-	fprintf(archivo, " %s;",infoV->tipoEstado.estado);
+	fprintf(archivo, " %s;",infoV->estado);
 }
 
 void creacionTxTPlacas(informacionVehiculos *infoV)
