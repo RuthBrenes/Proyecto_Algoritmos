@@ -7,6 +7,13 @@ typedef struct ListaCliente ListaCliente;
 typedef struct Nodo Nodo;
 typedef char string[300];
 
+// --- Estados de un vehiculo --- //
+char *DISPONIBLE = "Disponible";
+char *ALQUILADO = "Alquilado";
+char *EN_REPARACION = "En reparacion";
+char *FUERA_DE_CIRCULACION = "Fuera de circulacion";
+//-------------------------------//										
+
 typedef struct{
     string estado;
 }estadosDisponibles;
@@ -141,19 +148,19 @@ void lecturaDatosVehiculos(informacionVehiculos *infoV)
 
 	if(numEstado == 1)
 	{
-		strcpy(infoV->tipoEstado.estado, "Disponible");
+		strcpy(infoV->tipoEstado.estado, DISPONIBLE);
 	}
 	else if(numEstado == 2)
 	{
-		strcpy(infoV->tipoEstado.estado, "Alquilado");
+		strcpy(infoV->tipoEstado.estado, ALQUILADO);
 	}
 	else if(numEstado == 3)
 	{
-		strcpy(infoV->tipoEstado.estado, "En reparacion");
+		strcpy(infoV->tipoEstado.estado, EN_REPARACION);
 	}
 	else
 	{
-		strcpy(infoV->tipoEstado.estado, "Fuera de circulacion");
+		strcpy(infoV->tipoEstado.estado, FUERA_DE_CIRCULACION);
 	}
 }
 
@@ -1001,6 +1008,105 @@ void extraerInfoC(informacionCliente *infoC)
 	eliminarInfoCliente(infoC, listaCliente);
 }
 
+//-----------------------  Devolucion de un Vehiculo --------------------------------//
+
+void modificarEstadoVehiculo(informacionVehiculos *infoV, char placaVehiculo[10])
+{
+	FILE *archivo = NULL; 
+	
+	string listaVehiculos[100];
+	infoV->tamanoListaV = 0;
+	int indice = 0;
+	char linea[300];
+	char *delimitador = ";";
+	char *token = NULL;
+	
+	strcpy(infoV->numeroPlaca, placaVehiculo);
+
+	string ruta;
+	strcpy(ruta, ".\\InfoVehiculos\\");
+	strcat(ruta, infoV->numeroPlaca);
+	strcpy(infoV->tipoArchivo, ruta);
+	strcat(infoV->tipoArchivo, ".txt");
+	
+	archivo = fopen(infoV->tipoArchivo, "a+");
+	
+	if(archivo)
+	{
+		while(fgets(linea, 300, archivo))
+		{
+   			token = strtok(linea, delimitador);
+   			while( token != NULL ) 
+			{
+      			strcpy(listaVehiculos[indice], token);
+      			printf("%s\n", token);
+      			infoV->tamanoListaV++;
+      			indice++;
+    
+      			token = strtok(NULL, delimitador);
+   			}
+		}
+	}
+	fclose(archivo);
+	remove(infoV->tipoArchivo);
+
+	// --- Actualizacion del estado del vehiculo a disponible --- //
+	strcpy(listaVehiculos[10], " ");
+	strcat(listaVehiculos[10], DISPONIBLE);
+
+	// --- Actualizacion de los datos del vehiculo en el archivo --- //
+	string rutaAux;
+	strcpy(rutaAux, ".\\InfoVehiculos\\");
+	strcat(rutaAux,infoV->numeroPlaca);
+	strcpy(infoV->tipoArchivo, rutaAux);
+	strcat(infoV->tipoArchivo, ".txt");
+
+	FILE *archivoAux;
+	archivoAux = fopen(infoV->tipoArchivo, "a+");
+	
+	indice = 0;
+	while(indice < infoV->tamanoListaV)
+	{	
+		if(indice == (infoV->tamanoListaV)-1)
+		{
+			fprintf(archivoAux,"%s;", listaVehiculos[indice]);
+		}
+		else
+		{
+			fprintf(archivoAux,"%s;", listaVehiculos[indice]);
+		}
+		indice ++;
+	}
+	printf("\n");
+	printf("La modificacion se realizo exitosamente");
+
+}
+
+//Función para realizar la devolución de un vehículo
+void devolucionVehiculo(){
+	char cedula[9];
+	char placaVehiculo[10];
+	char condicionesDelVehiculo[300];
+
+	printf("** Sistema de devolucion de vehiculos. **\nIngrese su numero de cedula para poder continuar: ");
+	gets(cedula);
+	printf("El numero de cedula es %s\n", cedula);
+
+	printf("\nIngrese la placa del vehiculo que desea regresar: ");
+	gets(placaVehiculo);
+	printf("La placa del vehiculo es %s\n", placaVehiculo);
+
+	printf("\nIngrese las condiciones en las que el vehiculo se esta regresando: ");
+	gets(condicionesDelVehiculo);
+	printf("Las condiciones son:  %s\n", condicionesDelVehiculo);
+
+	informacionVehiculos vehiculo;
+	modificarEstadoVehiculo(&vehiculo, placaVehiculo);
+
+}
+
+//----------------------------------------------------------------------------------//
+
 void administrarInfoV(){
 	int activadorBucle2 = 1;
 	int opcionElegidaSubmenu;
@@ -1205,7 +1311,8 @@ int main()
 	//modificarInfoCliente(&cliente);
 	//consultaTodosC(&cliente);
 	//extraerInfoC(&cliente);
-	menu(L, C, vehiculo, cliente);
+	//menu(L, C, vehiculo, cliente);
+	devolucionVehiculo();
     
     return 0;
 }

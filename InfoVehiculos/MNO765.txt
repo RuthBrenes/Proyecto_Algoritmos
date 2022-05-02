@@ -1,1 +1,1 @@
-MNO765; Suzuki; Grand Vitara; 1999; Azul; 2493; Gasolina; 5; 254000; Aire acondicionado; En reparacion;
+MNO765; Suzuki; Grand Vitara; 1999; Azul; 2493; Gasolina; 5; 254000; Aire acondicionado; Disponible;
