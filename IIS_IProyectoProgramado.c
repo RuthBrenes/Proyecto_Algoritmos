@@ -1,6 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
+#include <ctype.h>
+
+int stringSize = 300;
 
 typedef struct Lista Lista;
 typedef struct ListaCliente ListaCliente;
@@ -83,6 +87,65 @@ ListaCliente *lista2(void)
 
 informacionVehiculos listaExtra[0];
 void menu(Lista *L, ListaCliente *C, informacionVehiculos infoV, informacionCliente infoC);
+
+
+//---------------------------------- Utilities methods -----------------------------------------------//
+
+int existeVehiculo(string placa){
+	
+	FILE *archivo = NULL; 
+	string ruta;
+	strcpy(ruta, ".\\InfoVehiculos\\");
+	strcat(ruta, placa);
+	strcat(ruta, ".txt");
+
+	int existsVehicleResult;
+
+	archivo = fopen(ruta, "r");
+	
+	if(archivo){
+		fclose(archivo);
+		existsVehicleResult = true; //1
+	}else{
+		existsVehicleResult = false; //0
+	}
+	
+	return existsVehicleResult;
+
+}
+
+int validarCedula(string cedula){
+
+	int cedulaSize = strlen(cedula);
+
+	if(cedulaSize != 9 ){
+		return false;
+	}
+
+	int i;
+	for(i = 0; i < strlen(cedula); i++){
+		if(!isdigit(cedula[i])){
+			return false;
+		}
+	}
+	return true;
+}
+
+char* obtenerCedula(){
+	char *cedula = malloc (sizeof (char) * stringSize);
+	printf("\nIngrese su numero de cedula para poder continuar: ");
+	gets(cedula);
+	if(validarCedula(cedula)){
+		return cedula;
+	}else{
+		printf("Formato de cedula no es correcto, debe ingresarla tal cual aparece en el documento de identidad\n");
+		return obtenerCedula();
+	}
+}
+
+//---------------------------------------------------------------------------------------------------//
+
+
 
 void lecturaDatosVehiculos(informacionVehiculos *infoV)
 {
@@ -1004,7 +1067,17 @@ void extraerInfoC(informacionCliente *infoC)
 	eliminarInfoCliente(infoC, listaCliente);
 }
 
-//-----------------------  Devolucion de un Vehiculo --------------------------------//
+//-----------------------  10. Consultar solicitudes de alquileres registrados --------------------------------//
+
+
+
+
+
+
+
+
+
+//-----------------------  11. Devolucion de un Vehiculo --------------------------------//
 
 void modificarEstadoVehiculo(informacionVehiculos *infoV, char placaVehiculo[10])
 {
@@ -1025,67 +1098,73 @@ void modificarEstadoVehiculo(informacionVehiculos *infoV, char placaVehiculo[10]
 	strcpy(infoV->tipoArchivo, ruta);
 	strcat(infoV->tipoArchivo, ".txt");
 	
-	archivo = fopen(infoV->tipoArchivo, "a+");
-	
-	if(archivo)
+	if( existeVehiculo(placaVehiculo) )
 	{
+
+		archivo = fopen(infoV->tipoArchivo, "a+");
+
 		while(fgets(linea, 300, archivo))
 		{
    			token = strtok(linea, delimitador);
    			while( token != NULL ) 
 			{
       			strcpy(listaVehiculos[indice], token);
-      			printf("%s\n", token);
       			infoV->tamanoListaV++;
       			indice++;
     
       			token = strtok(NULL, delimitador);
    			}
 		}
-	}
-	fclose(archivo);
-	remove(infoV->tipoArchivo);
 
-	// --- Actualizacion del estado del vehiculo a disponible --- //
-	strcpy(listaVehiculos[10], " ");
-	strcat(listaVehiculos[10], DISPONIBLE);
+		fclose(archivo);
+		remove(infoV->tipoArchivo);
 
-	// --- Actualizacion de los datos del vehiculo en el archivo --- //
-	string rutaAux;
-	strcpy(rutaAux, ".\\InfoVehiculos\\");
-	strcat(rutaAux,infoV->numeroPlaca);
-	strcpy(infoV->tipoArchivo, rutaAux);
-	strcat(infoV->tipoArchivo, ".txt");
+		// --- Actualizacion del estado del vehiculo a disponible --- //
+		strcpy(listaVehiculos[10], " ");
+		strcat(listaVehiculos[10], DISPONIBLE);
 
-	FILE *archivoAux;
-	archivoAux = fopen(infoV->tipoArchivo, "a+");
-	
-	indice = 0;
-	while(indice < infoV->tamanoListaV)
-	{	
-		if(indice == (infoV->tamanoListaV)-1)
-		{
-			fprintf(archivoAux,"%s;", listaVehiculos[indice]);
+		// --- Actualizacion de los datos del vehiculo en el archivo --- //
+		string rutaAux;
+		strcpy(rutaAux, ".\\InfoVehiculos\\");
+		strcat(rutaAux,infoV->numeroPlaca);
+		strcpy(infoV->tipoArchivo, rutaAux);
+		strcat(infoV->tipoArchivo, ".txt");
+
+		FILE *archivoAux;
+		archivoAux = fopen(infoV->tipoArchivo, "a+");
+		
+		indice = 0;
+		while(indice < infoV->tamanoListaV)
+		{	
+			if(indice == (infoV->tamanoListaV)-1)
+			{
+				fprintf(archivoAux,"%s;", listaVehiculos[indice]);
+			}
+			else
+			{
+				fprintf(archivoAux,"%s;", listaVehiculos[indice]);
+			}
+			indice ++;
 		}
-		else
-		{
-			fprintf(archivoAux,"%s;", listaVehiculos[indice]);
-		}
-		indice ++;
+		printf("\n");
+		printf("La modificacion se realizo exitosamente");
+
+	} else{
+		printf("No existe el vehiculo con la placa %s", placaVehiculo);
 	}
-	printf("\n");
-	printf("La modificacion se realizo exitosamente");
+
 
 }
 
 //Función para realizar la devolución de un vehículo
 void devolucionVehiculo(){
-	char cedula[9];
-	char placaVehiculo[10];
-	char condicionesDelVehiculo[300];
+	char *cedula;
+	string placaVehiculo;
+	string condicionesDelVehiculo;
 
-	printf("** Sistema de devolucion de vehiculos. **\nIngrese su numero de cedula para poder continuar: ");
-	gets(cedula);
+	printf("** Sistema de devolucion de vehiculos. **");
+
+	cedula = obtenerCedula();
 	printf("El numero de cedula es %s\n", cedula);
 
 	printf("\nIngrese la placa del vehiculo que desea regresar: ");
