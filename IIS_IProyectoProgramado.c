@@ -1277,7 +1277,7 @@ void menu(Lista *L, ListaCliente *C, informacionVehiculos infoV, informacionClie
 			case 6: printf("Consultar solicitudes de alquileres\n");
 			break;
 
-			case 7: printf("Devolver vehiculo\n");
+			case 7: devolucionVehiculo();
 			break;
 
 			case 8: printf("Analisis de datos\n");
@@ -1307,8 +1307,8 @@ int main()
 	//modificarInfoCliente(&cliente);
 	//consultaTodosC(&cliente);
 	//extraerInfoC(&cliente);
-	//menu(L, C, vehiculo, cliente);
-	devolucionVehiculo();
+	//devolucionVehiculo();
+	menu(L, C, vehiculo, cliente);
     
     return 0;
 }
